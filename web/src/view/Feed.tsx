@@ -19,14 +19,15 @@ export default class Feed extends React.Component<any, states>{
 
         Axios({
             url: `${window.location.protocol}//${window.location.hostname}:9503/api/feed`,
-            method: "GET"
+            method: "GET",
+            timeout: 5000
         }).then((result) => {
             if (result.status = 200) {
                 this.setState({ Posts: result.data.Feeds })
             }
         }).catch(() => {
             alert("연결에 실패하였습니다. 샘플 피드가 생성됩니다.")
-            this.setState({Posts:[]})
+            this.setState({ Posts: [] })
             for (var i = 0; i <= 30; i++) {
                 var newPostArray = new Array<Post>().concat(this.state.Posts)
                 newPostArray.push({
@@ -37,7 +38,7 @@ export default class Feed extends React.Component<any, states>{
                     WrittenTime: Date.now(),
                     Attachments: [new Media("Photo", faker.random.image())]
                 })
-                this.setState({Posts:newPostArray})
+                this.setState({ Posts: newPostArray })
             }
         })
     }
@@ -86,28 +87,31 @@ export default class Feed extends React.Component<any, states>{
     sendFeed() {
         const Content = this.state.myFeedText
         if (this.PerfectReplace(this.PerfectReplace(Content, "\n", ""), " ", "") == "") { alert("빈 내용은 전송하실 수 없습니다") } else {
-            Axios({
-                url: `${window.location.protocol}//${window.location.hostname}:9503/api/feed`,
-                method: "PUT",
-                data: { Content: Content }
-            }).then((result) => {
-                if (result.status = 200) {
-                    alert("성공적으로 전송되었습니다.");
-                    (document.getElementById("FeedInputBox") as any).value = ""
-                    var newPostArray = new Array<Post>().concat(this.state.Posts)
-                    newPostArray.push({
-                        WriterIP: "",
-                        Callsign: result.data.Callsign,
-                        Content: Content,
-                        Emoji: [],
-                        WrittenTime: Date.now(),
-                        Attachments: []
-                    })
-                    this.setState({ Posts: newPostArray })
-                }
-            }).catch(() => {
-                alert("연결에 실패하였습니다.");
-            })
+            Axios.put(`${window.location.protocol}//${window.location.hostname}:9503/api/feed`,
+                { Text: Content },
+                {
+                    headers: {
+                        "content-type": "application/json"
+                    },
+                    timeout: 3000
+                }).then((result) => {
+                    if (result.status = 200) {
+                        alert("성공적으로 전송되었습니다.");
+                        (document.getElementById("FeedInputBox") as any).value = ""
+                        var newPostArray = new Array<Post>().concat(this.state.Posts)
+                        newPostArray.push({
+                            WriterIP: "",
+                            Callsign: result.data.Callsign,
+                            Content: Content,
+                            Emoji: [],
+                            WrittenTime: Date.now(),
+                            Attachments: []
+                        })
+                        this.setState({ Posts: newPostArray })
+                    }
+                }).catch(() => {
+                    alert("연결에 실패하였습니다.");
+                })
         }
     }
 

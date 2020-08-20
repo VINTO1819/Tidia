@@ -56,7 +56,8 @@ export default class PostItem extends React.Component<props, states>{
         Axios({
             url: `${window.location.protocol}//${window.location.hostname}:9503/api/emoji/${this.props.PostItem.Callsign}`,
             method: "PUT",
-            data: { EmojiType: Type }
+            data: { EmojiType: Type },
+            timeout:1000
         }).then(() => {
             
         })
@@ -64,10 +65,12 @@ export default class PostItem extends React.Component<props, states>{
 
     deleteEmoji(Type: "ThumbUp" | "Funny" | "Sad" | "Angry" | "Amazing") {
         this.applyValue(Type, "Minus")
+        console.log(`${window.location.protocol}//${window.location.hostname}:9503/api/emoji/${this.props.PostItem.Callsign}`)
         Axios({
             url: `${window.location.protocol}//${window.location.hostname}:9503/api/emoji/${this.props.PostItem.Callsign}`,
             method: "DELETE",
-            data: { EmojiType: Type }
+            data: { EmojiType: Type },
+            timeout:1000
         }).then(() => {
 
         })

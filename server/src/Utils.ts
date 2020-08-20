@@ -1,5 +1,6 @@
 import Base64 from "crypto-js/enc-base64"
 import SHA512 from "crypto-js/sha512"
+import { Media } from "./model/Post"
 
 function PerfectReplace(Original:string, RemoveString:string, To:string):string{
     var Result = Original
@@ -57,6 +58,29 @@ export default class Utils{
 
 
         return Result
+    }
+
+    static ParseAttachments(Content:string):{Content:string, Attachments:Array<Media>}{
+        var Result = Content
+        const Filter = new RegExp('\[([^\[\]]+)\]\(([^)]+)')
+        const TagArray = Content.match(Filter)
+
+        const Attachment:Array<Media> = []
+        const TempAttachments:Array<string> = []
+
+        TagArray?.forEach(it => {
+            Result = Result.replace(it + ")", "") //remove Attachment Tag
+            TempAttachments.push(it)
+        })
+
+        TempAttachments.forEach(it => {
+            var Type = it.substring(1, it.length -1).split("]")[0]
+            var URLorCode = it.substring(1, (Type + "])").length -1).replace("](", "")
+            Attachment.push(new Media(Type as "Youtube" | "Facebook" | "Photo", URLorCode))
+        })
+        
+        return {Content:Result, Attachments:Attachment}
+
     }
 
 }
