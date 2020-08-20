@@ -1,0 +1,161 @@
+﻿<!DOCTYPE HTML>
+<!--
+	일반 주제
+-->
+<html>
+<head>
+    <title>Tidia - 커뮤니티</title>
+    <meta name="description" content="Tidia는 회원가입이 필요 없습니다, Tidia에서 처음 보는 사람들과 익명으로 만나 재미있는 이야기와 잡담을 나누세요.">
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+
+    <meta property="og:title" content="Let's Tidia!" />
+    <meta property="og:description" content="당신을 위한 익명 SNS, Tidia" />
+    <meta property="og:site_name" content="Tidia">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://i.ibb.co/KFzQcfv/Tidia-OGTAG.png" />
+    <link rel="shortcut icon" href="../favicon.ico">
+
+</head>
+	<body class="is-preload">
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Wrapper -->
+                <div id="wrapper">
+
+                    <!-- 메인 -->
+                    <section class="panel banner right">
+                        <div class="content color0 span-3-75">
+                            <h1 class="major">커뮤니티</h1>
+                            <p>남여노소 누구나 즐길 수 있는 커뮤니티입니다! 그럼, <strong>Let's Tidia!</strong></p>
+                            <ul class="actions">
+                                <li><a href="#third" class="button primary color1 circle icon solid fa-angle-right">Next</a></li>
+                            </ul>
+                        </div>
+                        <div class="image filtered span-1-75" data-position="25% 25%">
+                            <img src="../images/pic01.jpg" alt="" />
+                        </div>
+                    </section>
+
+                    <!-- 글 쓰기 -->
+                    <section class="panel color4-alt" id="second">
+                        <div class="inner columns divided">
+                            <div class="span-3-25">
+                                <form method="post" action="../API/Write" enctype="application/x-www-form-urlencoded">
+                                    <div class="fields">
+                                        <div class="field">
+                                            <label for="message">글 내용</label>
+                                            <textarea name="Content" id="message" rows="4" placeholder="미디어 첨부방법
+ * 이미지 : [IMG](이미지 URL)
+ * 영상 : [YOUTUBE/FACEBOOK](영상 ID)
+ * 유저 태그 : @(유저 ID)"></textarea>
+                                        </div>
+                                    </div>
+                                    <ul class="actions">
+                                        <li><input type="submit" id="SubmitButton" value="Let's Tidia!" class="button primary" /></li>
+                                    </ul>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 글 목록 -->
+                    <section class="panel" id="third">
+                        <div class="intro color2">
+                            <h2 class="major">감상할 시간!</h2>
+                            <p>다른 Tidia 사용자들이 작성한 글을 확인해 보세요! (욕설/음란 게시물 작성 시 삭제 및 IP 강퇴조치를 취하겠습니다)</p>
+                        </div>
+
+                            <div class="inner color5" id="PostList" style="display: inline-block; overflow:auto; width:750px; " >
+
+                            </div>
+
+                    </section>
+
+                    <!-- 안내 -->
+                    <section class="panel" id="fourth">
+                        <div class="intro color4-alt">
+                            <h2 class="major">Tidia</h2>
+                            <p>Tidia는 Kotlin으로 작성된 차세대 익명 SNS입니다! (저희 Tidia는 IP 정보를 제외한 개인정보를 일체 수집하지 않습니다)</p>
+                        </div>
+                     </section>
+
+
+
+                        <!-- Copyright -->
+                        <div class="copyright" style="color:white">&copy; Made By <a href="https://github.com/VINTO1819/">VINTO</a>.</div>
+
+                </div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/main.js"></script>
+            <script>
+
+                $(document).ready(function () {
+                    //문서 뷰어 크기 플랫폼에 따라 조절
+                    var filter = "win16|win32|win64|mac|macintel";
+                    if ( navigator.platform )
+                    {
+                        if(filter.indexOf(navigator.platform.toLowerCase()) < 0 )
+                        { //모바일이라면 문서 뷰어 div 가로 기본으로 설정하기
+                            $("#PostList").css("width", "");
+                        }
+                     }
+
+                    $('#message').empty();
+                    $.post("../API/PostList", function (data) {
+                        document.getElementById("PostList").innerHTML = data; //게시글 리스트 HTML을 수정
+                    });
+
+                    setInterval(function () {
+
+                        $.post("../API/PostList", function (data) {
+                            document.getElementById("PostList").innerHTML = data; //게시글 리스트 HTML을 수정
+                        });
+
+
+                    }, 1000); //10초마다 게시글 동기화
+
+
+                    setInterval(function () {
+                        if($("#message").val().replace("\r\n", "").replace(" ","") != "")
+                        {
+                            $("#SubmitButton").attr('disabled', false); //Submit 버튼 활성화
+                        }
+                        else
+                        {
+                            $("#SubmitButton").attr('disabled', true); //Submit 버튼 비활성화
+                        }
+
+                    }, 10); //10ms마다 버튼 활성화여부 검사
+
+                });
+
+                //이모지 보내기
+                function SendEmoij(PostID, EmojiType) {
+                    var Packet = PostID + "|" + EmojiType;
+
+                    $.ajax({
+                        type: "POST",
+                        url: "../API/Emoji",
+                        dataType: "text",
+                        data: Packet,
+                        success: function (msg) { alert("등록되었습니다."); }
+
+                    });
+                }
+
+            </script>
+
+	</body>
+</html>
