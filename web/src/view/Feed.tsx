@@ -88,10 +88,10 @@ export default class Feed extends React.Component<any, states>{
         const Content = this.state.myFeedText
         if (this.PerfectReplace(this.PerfectReplace(Content, "\n", ""), " ", "") == "") { alert("빈 내용은 전송하실 수 없습니다") } else {
             Axios.put(`${window.location.protocol}//${window.location.hostname}:9503/api/feed`,
-                { Text: Content },
+                JSON.stringify({ Text: Content }),
                 {
                     headers: {
-                        "content-type": "application/json"
+                        "Content-Type": "application/json"
                     },
                     timeout: 3000
                 }).then((result) => {
